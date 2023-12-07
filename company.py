@@ -188,6 +188,7 @@ def departments_expenses(departments: list, printing: int = 0) -> list:
     return user_data
 departments_expenses(departments, 1)
 
+
 # 7. Вывести названия отделов с указанием минимальной зарплаты в нём.
 
 # 8. Вывести названия отделов с указанием минимальной, средней и максимальной зарплаты в нём.
