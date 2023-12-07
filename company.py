@@ -117,31 +117,76 @@ user_list_vs_department(departments, 1)
 
 # 4. Вывести имена всех сотрудников компании, которые получают больше 100к.
 def employers_filter(departments: list, salary: int, printing: int = 0, more_less: str = 'more') -> list:
+    # Берем подготовленные данные
     input_list = employers_data(departments)
-    # Составление списка для вывода
+    # Будущий список для вывода
     out_list = []
+    # Перебор пользователей
     for user in input_list:
+        # Критерии фильтрации
         if more_less == 'more':
+            sign = '>'
             if user['salary_rub'] > salary:
                 user_name = str(f"{user['first_name']} {user['last_name']}")
                 data = str(f"Сотрудник: {user_name.ljust(20)} Отдел: {user['department']}")
                 out_list.append(data)
-        if more_less == 'less':
+        elif more_less == 'less':
+            sign = '<'
             if user['salary_rub'] < salary:
                 user_name = str(f"{user['first_name']} {user['last_name']}")
                 data = str(f"Сотрудник: {user_name.ljust(20)} Отдел: {user['department']}")
                 out_list.append(data)
         else:
             print('Неправильно задан параметр more')
+            break
     # Управление выводом в терминал
-    need_print(out_list, 'Список сотрудников по критериям:', printing)
+    need_print(out_list, f'Список сотрудников с зарплатой {sign} {salary} рублей:', printing)
     return out_list
 employers_filter(departments, 100000, 1, 'more')
 
 # 5. Вывести позиции, на которых люди получают меньше 80к (можно с повторениями).
-employers_filter(departments, 80000, 1, 'less')
+def position_filter(departments: list, salary: int, printing: int = 0, more_less: str = 'more') -> list:
+    # Берем подготовленные данные
+    input_list = employers_data(departments)
+    # Будущий список для вывода
+    out_list = []
+    # Перебор пользователей
+    for user in input_list:
+        # Критерии фильтрации
+        if more_less == 'more':
+            sign = '>'
+            if user['salary_rub'] > salary:
+                position_name = str(user['position'])
+                data = str(f"Должность: {position_name.ljust(20)} Отдел: {user['department']}")
+                out_list.append(data)
+        elif more_less == 'less':
+            sign = '<'
+            if user['salary_rub'] < salary:
+                position_name = str(user['position'])
+                data = str(f"Должность: {position_name.ljust(20)} Отдел: {user['department']}")
+                out_list.append(data)
+        else:
+            print('Неправильно задан параметр more')
+            break
+    # Управление выводом в терминал
+    need_print(out_list, f'Список должностей с зарплатой {sign} {salary} рублей:', printing)
+    return out_list
+position_filter(departments, 80000, 1, 'less')
 
 # 6. Посчитать, сколько денег в месяц уходит на каждый отдел – и вывести вместе с названием отдела
+def departments_expenses(departments: list, printing: int = 0) -> list:
+    # Список для хранения вывода
+    user_data = []
+    # Проход по списку со словарями
+    for department in departments:
+        money = 0
+        # Проход по сотрудникам в отделе
+        for user in department["employers"]:
+            money += user['salary_rub']     
+        user_data.append(f"Отдел {department['title']} расходует {money} рублей в месяц")
+    need_print(user_data, 'Отчет по расходам:', printing)
+    return user_data
+departments_expenses(departments, 1)
 
 # 7. Вывести названия отделов с указанием минимальной зарплаты в нём.
 
