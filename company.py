@@ -52,3 +52,42 @@ taxes = [
     {"department": "IT Department", "name": "hiring", "value_percents": 6},
     {"department": "BizDev Department", "name": "sales", "value_percents": 20},
 ]
+# 1. Вывести названия всех отделов
+def take_departments(departments: list, need_print: int = 0) -> list:
+    # Список для хранения названий найденных отделов
+    departments_list = []
+    # Проход по списку со словарями
+    for department in departments:
+        # Названия отделов записываем в отдельный список
+        departments_list.append(department['title'])
+    # Управление выводом в терминал
+    if need_print == 1:
+        print('\n')
+        print('Список отделов:')
+        for department in departments_list:
+            print(f"- {department}")
+        print('\n')
+    return departments_list
+
+take_departments(departments, 1)
+
+# 2. Вывести имена всех сотрудников компании.
+def employers_name(departments: list, need_print: int = 0) -> list:
+    # Список для хранения имен сотрудников
+    user_list = []
+    # Проход по списку со словарями
+    for department in departments:
+        # Проход по сотрудникам в отделе
+        for user in department["employers"]:
+            # Запись каждого сотрудника в список
+            user_list.append(str(f"{user['first_name']} {user['last_name']}"))
+    # Управление выводом в терминал
+    if need_print == 1:
+        print('\n')
+        print('Список сотрудников:')
+        for user in user_list:
+            print(f"- {user}")
+        print('\n')
+    return user_list
+
+employers_name(departments, 1)
