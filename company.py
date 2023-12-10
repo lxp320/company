@@ -26,6 +26,8 @@
 17. Вывести имя и фамилию сотрудника, за которого компания платит меньше всего налогов.
 """
 
+from typing import Any
+
 departments = [
     {
         "title": "HR department",
@@ -54,12 +56,15 @@ taxes = [
 ]
 
 # Функция для печати в терминал
-def need_print(value: list, text: str = 'Вывод:', printing: int = 0) -> None:
+def need_print(value: Any, text: str = 'Вывод:', printing: int = 0) -> None:
     if printing == 1:
         print()
         print(text)
-        for var in value:
-            print(f"- {var}")
+        if type(value) is int:
+            print(value)
+        else:
+            for var in value:
+                print(f"- {var}")
         print()
 
 # Функция для преобразования исходных данных. Отдел добавлен в словарь пользователя.
@@ -188,18 +193,126 @@ def departments_expenses(departments: list, printing: int = 0) -> list:
     return user_data
 departments_expenses(departments, 1)
 
-
 # 7. Вывести названия отделов с указанием минимальной зарплаты в нём.
-
+# Функция для создания списка с зарплатами в отделе
+def user_salary(department: list, gender: str = 'all') -> list:
+    user_salary = []
+    user_female = ["Michelle", "Nicole", "Christina", "Caitlin"]
+    # Проход по сотрудникам в отделе
+    for user in department["employers"]:
+        # Фидбьр по гендеру
+        if gender == 'all':
+            # Составляем список с зарплатами
+            user_salary.append(user["salary_rub"])
+        elif gender == 'female':
+            if user["first_name"] in user_female:
+                # Составляем список с зарплатами
+                user_salary.append(user["salary_rub"])
+        elif gender == 'male':
+            if user["first_name"] not in user_female:
+                # Составляем список с зарплатами
+                user_salary.append(user["salary_rub"])
+        else:
+            print("Не верно указан пол")
+    return user_salary
+# Функция для определения минимальной зарплаты в отделе
+def departments_min_salary(departments: list, printing: int = 0) -> list:
+    # Список для хранения вывода
+    user_data = []
+    # Проход по списку со словарями
+    for department in departments:
+        # Вычисляем минимальную зарплату
+        min_money = min(user_salary(department))    
+        user_data.append(f"Минимальная зарплата в отделе {department['title']} равна {min_money}")
+    need_print(user_data, 'Отчет по минимальной зарплате по отделам:', printing)
+    return user_data
+departments_min_salary(departments, 1)
+    
 # 8. Вывести названия отделов с указанием минимальной, средней и максимальной зарплаты в нём.
+def departments_salary(departments: list, printing: int = 0) -> list:
+    # Список для хранения вывода
+    user_data = []
+    # Проход по списку со словарями
+    for department in departments:
+        # Вычисляем зарплату
+        salary = user_salary(department)
+        min_money = min(salary) 
+        max_money = max(salary) 
+        mean_money = int(sum(salary)/len(salary))
+        user_data.append(f"""В отделе {department['title']}: 
+                         Минимальная зарплата: {min_money} 
+                         Средняя зарплата: {mean_money}
+                         Максимальная зарплата: {max_money}""")
+    need_print(user_data, 'Отчет по зарплате по отделам:', printing)
+    return user_data
+departments_salary(departments, 1)
 
 # 9. Вывести среднюю зарплату по всей компании.
+def mean_company_salery(departments: list, printing: int = 0) -> list:
+    # Список для хранения вывода
+    user_data = []
+    # Проход по списку со словарями
+    for department in departments:
+        # Записываем зарплаты в отделе
+        salary = user_salary(department)
+        user_data += salary
+    # Вычисляем среднюю зарплату по компании
+    mean_salary = int(sum(user_data)/len(user_data))
+    need_print(mean_salary, 'Средняя зарплата в компании:', printing)
+    return mean_salary
+mean_company_salery(departments, 1)
 
 # 10. Вывести названия должностей, которые получают больше 90к без повторений.
+def high_salary_position(departments: list, printing: int = 0) -> list:
+    # Список для хранения вывода
+    user_data = []
+    position_max_salary = {}
+    # Проход по списку со словарями
+    for department in departments:
+        # Добавляем должность в словарь, если ее еще там нет
+        for user in department["employers"]:
+            if position_max_salary.get(user["position"]) is None:
+                position_max_salary[user["position"]] = 0
+            # Записываем максимальную ЗП для каждой должности
+            if user["salary_rub"] > position_max_salary.get(user["position"]):
+                position_max_salary[user["position"]] = user["salary_rub"]
+    # Формируем данные для вывода
+    for employer_position, salary in position_max_salary.items():
+        if salary > 90000:
+            user_data.append(employer_position)
+    need_print(user_data, 'Должности с зарплатой выше 90000 руб.::', printing)
+    return user_data
+high_salary_position(departments, 1)
 
 # 11. Посчитать среднюю зарплату по каждому отделу среди девушек (их зовут Мишель, Николь, Кристина и Кейтлин).
+def mean_female_company_salery(departments: list, printing: int = 0) -> list:
+    # Список для хранения вывода
+    user_data = []
+    # Проход по списку со словарями
+    for department in departments:
+        # Вычисляем зарплату в отделе
+        salary = user_salary(department, 'female')
+        user_data += salary
+    # Вычисляем зарплату по компании
+    mean_salary = int(sum(user_data)/len(user_data))
+    need_print(mean_salary, 'Средняя зарплата в компании среди женщин:', printing)
+    return mean_salary
+mean_female_company_salery(departments, 1)
 
 # 12. Вывести без повторений имена людей, чьи фамилии заканчиваются на гласную букву.
+def last_name_sorted(departments: list, printing: int = 0) -> list:
+    # Список для хранения вывода
+    user_data = []
+    vowels_letter = ["a", "e", "i", "o", "u", "y"]
+    # Проход по списку со словарями
+    for department in departments:
+        for user in department["employers"]:
+            if user["last_name"][-1] in vowels_letter:
+                if user["first_name"] not in user_data:
+                    user_data.append(user["first_name"])
+    need_print(user_data, 'Сотрудники с фамилией, заканчивающейся на гласную:', printing)
+    return user_data        
+last_name_sorted(departments, 1)
 
 # 13. Вывести список отделов со средним налогом на сотрудников этого отдела.
 
